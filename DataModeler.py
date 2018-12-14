@@ -2,11 +2,14 @@ import mysql.connector
 import matplotlib
 import numpy as np
 import pandas as pd
+
 from sklearn.preprocessing import LabelEncoder
-import random
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.ensemble import GradientBoostingClassifier
+
+import random
 import DataTransmitter as dt
+
 conn = mysql.connector.connect(user = dt._userName, password= dt._password, host = dt._host)
 print(conn)
 mycursor = conn.cursor()
@@ -22,7 +25,7 @@ mycursor.execute(
     "LINES TERMINATED BY '\n';")
 for x in mycursor:
     print(x)
-    #cur.execute(dbQuery)
+#cur.execute(dbQuery)
 #result=cur.fetchall()
 
 #c = csv.writer(open("temp.csv","wb"))
