@@ -6,7 +6,7 @@ _records = []
 _currentQuery = ""
 _emailData = []
 _databaseName = ""
-_host = "127.0.0.1"
+_host = ""
 
 
 def getData():
