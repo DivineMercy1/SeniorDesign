@@ -16,7 +16,7 @@ for x in mycursor:
 mycursor.execute("use odendata;")
 mycursor.execute(
     "SELECT * FROM odendata.`517_foam_extrusion_9-30_12-3`" +
-    "INTO OUTFILE '/var/lib/mysql-files/test.csv'" +
+    "INTO OUTFILE 'D:/Programs/Dropbox/Senior Design/test.csv'" +
     "FIELDS TERMINATED BY ','" +
     "ENCLOSED BY '\"'" +
     "LINES TERMINATED BY '\n';")
