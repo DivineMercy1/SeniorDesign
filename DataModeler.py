@@ -22,6 +22,11 @@ mycursor.execute(
     "LINES TERMINATED BY '\n';")
 for x in mycursor:
     print(x)
+    #cur.execute(dbQuery)
+#result=cur.fetchall()
+
+#c = csv.writer(open("temp.csv","wb"))
+#c.writerow(result)
 
 mycursor.close()
 conn.close()
