@@ -1,0 +1,13 @@
+{
+    "python.unitTest.pyTestArgs": [],
+    "python.unitTest.unittestEnabled": false,
+    "python.unitTest.nosetestsEnabled": false,
+    "python.unitTest.pyTestEnabled": false,
+    "python.unitTest.promptToConfigure": false,
+    "code-runner.executorMap": 
+    { 
+        "python": "\"C:\\Users\\Jon\\Anaconda3\\python.exe\"" 
+    },
+    "python.linting.pylintEnabled": false,
+    "python.pythonPath": "C:\\Users\\Jon\\Anaconda3\\python.exe"
+}

@@ -1,15 +1,29 @@
 import mysql.connector
+import matplotlib
+import LocalLibrary as ll
+import DataTransmitter as dt
+import numpy as np
+import pandas as pd
 
-conn = mysql.connector.connect(user ='root', password='password', host = '127.0.0.1')
-print(conn)
-mycursor = conn.cursor()
-mycursor.execute("show databases;")
-for x in mycursor:
-    print(x)
-mycursor.execute("use odendata;")
-mycursor.execute("SELECT * FROM odendata.`517_foam_extrusion_9-30_12-3`;")
-for x in mycursor:
-    print(x)
+from sklearn.preprocessing import LabelEncoder
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import GradientBoostingClassifier
 
-mycursor.close()
-conn.close()
+import random
+dataT = dt.DatabaseClient()
+print(dataT)
+cursor = dataT.getCursor()
+dataT.setQuery("show databases;")
+dataT.performQuery()
+for x in cursor:
+    print(x)
+dataT.setQuery("use odendata;")
+dataT.performQuery()
+ll.DeleteCSVFile("test")
+dataT.setQuery(ll._selectBaseData + ll._outputToFile)
+dataT.performQuery()
+
+#result=dataT.getCursor.fetchall()
+#c = csv.writer(open("test.csv","wb"))
+#c.writerow(result)
+dataT.close()
