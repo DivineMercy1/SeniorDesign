@@ -1,5 +1,7 @@
 import mysql.connector
 import matplotlib
+import LocalLibrary as ll
+import DataTransmitter as dt
 import numpy as np
 import pandas as pd
 
@@ -8,28 +10,20 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.ensemble import GradientBoostingClassifier
 
 import random
-import DataTransmitter as dt
-
-conn = mysql.connector.connect(user = dt._userName, password= dt._password, host = dt._host)
-print(conn)
-mycursor = conn.cursor()
-mycursor.execute("show databases;")
-for x in mycursor:
+dataT = dt.DatabaseClient()
+print(dataT)
+cursor = dataT.getCursor()
+dataT.setQuery("show databases;")
+dataT.performQuery()
+for x in cursor:
     print(x)
-mycursor.execute("use odendata;")
-mycursor.execute(
-    "SELECT * FROM odendata.`517_foam_extrusion_9-30_12-3`" +
-    "INTO OUTFILE 'D:/Programs/Dropbox/Senior Design/test.csv'" +
-    "FIELDS TERMINATED BY ','" +
-    "ENCLOSED BY '\"'" +
-    "LINES TERMINATED BY '\n';")
-for x in mycursor:
-    print(x)
-#cur.execute(dbQuery)
-#result=cur.fetchall()
+dataT.setQuery("use odendata;")
+dataT.performQuery()
+ll.DeleteCSVFile("test")
+dataT.setQuery(ll._selectBaseData + ll._outputToFile)
+dataT.performQuery()
 
-#c = csv.writer(open("temp.csv","wb"))
+#result=dataT.getCursor.fetchall()
+#c = csv.writer(open("test.csv","wb"))
 #c.writerow(result)
-
-mycursor.close()
-conn.close()
+dataT.close()
