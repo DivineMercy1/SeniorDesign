@@ -34,12 +34,12 @@ class DatabaseClient:
     def setQuery(self, newQ):
         self._currentQuery = newQ
         return
-                            
+
     # performs the current query
     def performQuery(self):
         # execute query
         self._mycursor.execute(self._currentQuery)
-        return 
+        return
     # sends emails to the selected addresses.
     def sendEmails(self):
         return
