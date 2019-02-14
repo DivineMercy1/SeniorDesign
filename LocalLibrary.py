@@ -1,7 +1,6 @@
 import os
 ROOT = os.path.abspath("").replace('\\', '/')
 _selectBaseData = "SELECT * FROM odendata.massdata "
-_selectMotorRpmTrain = "(SELECT * FROM odendata.motorrpmpullout order by timestamp asc) "
 _selectColumnHeaders = "Select \"values\", \"timestamp\" union all "
 #_outputToFile = "INTO OUTFILE '" + ROOT + "/test.csv' FIELDS TERMINATED BY ',' ENCLOSED BY '\"' LINES TERMINATED BY '\n';"
 def OutputToFileNameQuery(fileName):
@@ -12,3 +11,5 @@ def DeleteCSVFile(f):
     if os.path.exists(f):
         os.remove(f)
     return
+def SelectMetric(metricName):
+    return "(SELECT * FROM odendata." + metricName + " order by timestamp asc) "
