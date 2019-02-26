@@ -4,7 +4,8 @@ import mysql.connector
 _userName = "root"
 _password = "password"
 _records = []
-_emailData = []
+_emailData = "Forecasting summary/information:"
+_emailImages = []
 _databaseName = ""
 _host = "127.0.0.1"
 class DatabaseClient:
@@ -12,49 +13,36 @@ class DatabaseClient:
         self._currentQuery = ""
         self._conn = mysql.connector.connect(user = _userName, password= _password, host = _host)
         self._mycursor = self._conn.cursor()
-    # retrieve data in csv format
-    def getData(self):
-        # perform query
-        # save as csv in the current working folder
-        return
-
-    #after retrieving the data, cleanse poor values
-    def cleanData(self):
-        # find any outliers and remove them from the dataset
-        # store this to the dataset
-        # push clean data set used to the server
-        return
-
-    # returns the clean data set
-    def getCleanData(self):
-        # return the clean data
-        return
 
     # sets the query to the desired string to perform
     def setQuery(self, newQ):
         self._currentQuery = newQ
         return
 
+    def getQuery(self):
+        return self._currentQuery
+
     # performs the current query
     def performQuery(self):
         # execute query
         self._mycursor.execute(self._currentQuery)
         return
-    # sends emails to the selected addresses.
-    def sendEmails(self):
-        return
 
     #returns the cursor
     def getCursor(self):
         return self._mycursor
+    #returns the cursor - prepared
+    def getPreparedCursor(self):
+        return self._conn.cursor(prepared = True)
 
     def close(self):
         self._mycursor.close()
         self._conn.close()
         return
-
+    def comm(self):
+        self._conn.commit()
 # ---------------- Send email portion of transmitter -------------
-def SendEmails(ImgFileName):
+def SendEmails():
     import smtplib
     import os
     from email.mime.text import MIMEText
@@ -66,20 +54,30 @@ def SendEmails(ImgFileName):
     fromEmail = "rfsworldnotif"
     fromPass = "rfstest1"
     # who receives email
-    #recipients = ["michael.marandino_jr@uconn.edu", "kyle.barry@uconn.edu", "nathan.hom@uconn.edu", "jonathan.simonin@uconn.edu"]
-    recipients = ['school@jonsimonin.com', 'hayley.allard-raucci@uconn.edu']
+    recipients = ["michael.marandino_jr@uconn.edu", "kyle.barry@uconn.edu", "nathan.hom@uconn.edu", "jonathan.simonin@uconn.edu"]
+    recipients = ["school@jonsimonin.com"]
     # login
     server.login(fromEmail, fromPass)
     # set message details
     msg = MIMEMultipart()
-    text = MIMEText("""Are you proud of me babe?""")
-    img_data = open(ImgFileName, 'rb').read()
-    image = MIMEImage(img_data, name=os.path.basename(ImgFileName))
+    text = MIMEText(_emailData)
+    global _emailImages
+    for img in _emailImages:
+        img_data = open(img, 'rb').read()
+        msg.attach(MIMEImage(img_data, name=os.path.basename(img)))
+    _emailImages = []
     msg.attach(text)
-    msg.attach(image)
     msg['Subject'] = "Test - SD"
     msg['From'] = fromEmail
     msg['To'] = ", ".join(recipients)
     #send email
     server.sendmail(fromEmail, recipients, msg.as_string())
     server.quit()
+
+def addEmailText(strToAdd):
+    global _emailData
+    _emailData = _emailData + "\n" + strToAdd
+
+def AddEmailImage(imgName):
+    global _emailImages
+    _emailImages.append(imgName)
