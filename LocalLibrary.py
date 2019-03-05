@@ -25,7 +25,9 @@ def InsertForecast():
 def ClearForecast():
     q = "TRUNCATE TABLE odendata.forecasteddata;"
     return q
-
+def GetEmails():
+    q = "SELECT email from odendata.emails;"
+    return q
 # deletes the images stored in the folder path given
 def DeleteImageFolder(path):
     for the_file in os.listdir(path):

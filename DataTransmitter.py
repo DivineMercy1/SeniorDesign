@@ -4,6 +4,7 @@ import mysql.connector
 _userName = "root"
 _password = "password"
 _records = []
+_recipients = []
 _emailData = "Forecasting summary/information:"
 _emailImages = []
 _databaseName = ""
@@ -54,8 +55,7 @@ def SendEmails():
     fromEmail = "rfsworldnotif"
     fromPass = "rfstest1"
     # who receives email
-    recipients = ["michael.marandino_jr@uconn.edu", "kyle.barry@uconn.edu", "nathan.hom@uconn.edu", "jonathan.simonin@uconn.edu"]
-    recipients = ["school@jonsimonin.com"]
+    recipients = _recipients
     # login
     server.login(fromEmail, fromPass)
     # set message details
@@ -74,10 +74,15 @@ def SendEmails():
     server.sendmail(fromEmail, recipients, msg.as_string())
     server.quit()
 
-def addEmailText(strToAdd):
+def AddEmailText(strToAdd):
     global _emailData
     _emailData = _emailData + "\n" + strToAdd
 
 def AddEmailImage(imgName):
     global _emailImages
     _emailImages.append(imgName)
+
+def AddEmailRecipients(arr):
+    global _recipients
+    for em in arr:
+        _recipients.append(em)
