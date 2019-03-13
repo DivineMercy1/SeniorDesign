@@ -42,7 +42,7 @@ def DataPlot(dataSet):
     #
     #plt.show()
     # the y axis will be the values sampled at a frequency of business days 'B', averaged
-    y = dataSet['values'].resample('B').mean()
+    y = dataSet['values'].resample('H').mean()
     #y = y.dropna()
     #print(y['2018':])
 
@@ -58,6 +58,8 @@ def SARIMAXPlot(dataSet, iterator, predictionDate):
     #p = q = d = range(0,2)
     #pdq = list(itertools.product(p,d,q))
     #seasonal_pdq = [(x[0], x[1], x[2], 12) for x in list(itertools.product(p,d,q))]
+    #print(dataSet.head())
+    #dataSet[dataSet['timestamp'] < pd.datetime('2018-12-01')]
     mod = sm.tsa.statespace.SARIMAX(dataSet, order = (1,1,1), seasonal_order=(1,1,0,12), enforce_stationarity=False, enforce_invertibility=False)
 
     #mod = ARMA(y, order = (1,1,1))
@@ -73,6 +75,7 @@ def SARIMAXPlot(dataSet, iterator, predictionDate):
     pred = results.get_prediction(start=pd.to_datetime(predictionDate), dynamic=False)
     pred_ci = pred.conf_int()
     ax = y[str(datetime.datetime.strptime(predictionDate, '%Y-%m-%d').year):].plot(label='observed')
+    ax.set_xlim('2018-12-01')
     pred.predicted_mean.plot(ax=ax, label='One-Step ahead forecast', alpha = 7, figsize=(14,8))
     ax.fill_between(pred_ci.index, pred_ci.iloc[:,0], pred_ci.iloc[:,1], color = 'k', alpha = .2)
     ax.set_xlabel('Date')
@@ -110,8 +113,8 @@ def DataAnalysis(dataSet, results, iterator, stepsAhead, startDate):
     ax.set_xlabel('Date')
     ax.set_ylabel('Motor RPM Pullout Value')
     plt.legend()
-    plt.savefig("images/" + metrics[iterator] + " - 15 step ahead.png")
-    dt.AddEmailImage("images/" + metrics[iterator] + " - 15 step ahead.png")
+    plt.savefig("images/" + metrics[iterator] + " - " + str(stepsAhead) + " step ahead.png")
+    dt.AddEmailImage("images/" + metrics[iterator] + " - " + str(stepsAhead) + " step ahead.png")
     plt.show()
     #dt.SendEmails("test.png")
 
@@ -216,7 +219,7 @@ for metric in range(0, len(metrics)):
     trainSet = pd.read_csv('dump/' + metrics[metric] + '.csv')
     # refer to the three methods above to see what each does.
     y = DataPlot(trainSet)
-    pred, results = SARIMAXPlot(y, metric, '2018-10-01')
+    pred, results = SARIMAXPlot(y, metric, '2018-12-01')
     predD1, predD2 = DataAnalysis(pred, results, metric, 15, '2018-11-01')
 
     # upload CSVs to database which gets read through power bi.
