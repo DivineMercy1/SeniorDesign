@@ -41,8 +41,8 @@ def DataPlot(dataSet):
     dataSet.plot(kind = "line")
     #
     #plt.show()
-    # the y axis will be the values sampled at a frequency of business days 'B', averaged
-    y = dataSet['values'].resample('H').mean()
+    # the y axis will be the values sampled at a frequency of hours 'H', averaged
+    y = dataSet['values'].resample('B').mean()
     #y = y.dropna()
     #print(y['2018':])
 
@@ -75,7 +75,8 @@ def SARIMAXPlot(dataSet, iterator, predictionDate):
     pred = results.get_prediction(start=pd.to_datetime(predictionDate), dynamic=False)
     pred_ci = pred.conf_int()
     ax = y[str(datetime.datetime.strptime(predictionDate, '%Y-%m-%d').year):].plot(label='observed')
-    ax.set_xlim('2018-12-01')
+    #TODO THIS WILL BE A DYNAMIC RANGE - NOT HARD SET
+    ax.set_xlim('2018-08-01', '2018-12-31')
     pred.predicted_mean.plot(ax=ax, label='One-Step ahead forecast', alpha = 7, figsize=(14,8))
     ax.fill_between(pred_ci.index, pred_ci.iloc[:,0], pred_ci.iloc[:,1], color = 'k', alpha = .2)
     ax.set_xlabel('Date')
@@ -101,22 +102,22 @@ def DataAnalysis(dataSet, results, iterator, stepsAhead, startDate):
     # RMSE - that our model was able to forecast the average values in the test set within x of the real values.
     #print('The Root Mean Squared Error of our forecasts is {}'.format(round(np.sqrt(mse), 2)))
     dt.AddEmailText('The Root Mean Squared Error of our forecasts is {}'.format(round(np.sqrt(mse), 2)))
-
     # Producing and visualizing forecasts
     pred_uc = results.get_forecast(steps=stepsAhead)
     pred_ci = pred_uc.conf_int()
     ax = y.plot(label='observed', figsize=(14, 8))
+    #TODO THIS WILL BE A DYNAMIC RANGE - NOT HARD SET
+    #ax.set_xlim('2018-11-01', '2018-12-31')
     pred_uc.predicted_mean.plot(ax=ax, label='Forecast')
     ax.fill_between(pred_ci.index,
                     pred_ci.iloc[:, 0],
                     pred_ci.iloc[:, 1], color='k', alpha=.25)
     ax.set_xlabel('Date')
-    ax.set_ylabel('Motor RPM Pullout Value')
+    ax.set_ylabel('Value')
     plt.legend()
     plt.savefig("images/" + metrics[iterator] + " - " + str(stepsAhead) + " step ahead.png")
     dt.AddEmailImage("images/" + metrics[iterator] + " - " + str(stepsAhead) + " step ahead.png")
     plt.show()
-    #dt.SendEmails("test.png")
 
     pred_mean = np.mean(pred_uc.predicted_mean)
     pred_sd = np.std(pred_uc.predicted_mean)
@@ -184,6 +185,8 @@ cursor = dataT.getCursor()
 # - Import that data to relevant table   -
 # - Limit the data you want to watch     -
 # - i.e. time range (say last 3 months)  -
+# - Separate Below Code to new file, keep-
+# - code above in dataModeler.           -
 # ------- END TODO -----------------------
 
 # Shows all databases that can be used
@@ -204,7 +207,7 @@ dataT.performQuery()
 for x in cursor:
     x = ''.join(x)
     metrics.append(x)
-
+steps = 24 * 15 # 24 hours * 15 days, 3 week projection
 # go through all of the metric variables we are watching
 for metric in range(0, len(metrics)):
     # since we grab files for the train info, we want to delete the training file if it exists
@@ -219,11 +222,11 @@ for metric in range(0, len(metrics)):
     trainSet = pd.read_csv('dump/' + metrics[metric] + '.csv')
     # refer to the three methods above to see what each does.
     y = DataPlot(trainSet)
-    pred, results = SARIMAXPlot(y, metric, '2018-12-01')
-    predD1, predD2 = DataAnalysis(pred, results, metric, 15, '2018-11-01')
+    pred, results = SARIMAXPlot(y, metric, '2018-11-31')
+    predD1, predD2 = DataAnalysis(pred, results, metric, steps, '2018-11-31')
 
     # upload CSVs to database which gets read through power bi.
-    UploadForecast(predD1, predD2, metrics[metric], 15)
+    UploadForecast(predD1, predD2, metrics[metric], steps)
 
     ll.DeleteImageFolder('images/')
 dataT.setQuery(ll.ClearForecast())
